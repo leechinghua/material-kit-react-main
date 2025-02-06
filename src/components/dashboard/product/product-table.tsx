@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Checkbox from '@mui/material/Checkbox';
@@ -14,7 +13,6 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import dayjs from 'dayjs';
 
 import { useSelection } from '@/hooks/use-selection';
 
@@ -22,20 +20,21 @@ function noop(): void {
   // do nothing
 }
 
-export interface Customer {
+export interface Product {
   id: string;
-  avatar: string;
   name: string;
-  email: string;
-  address: { city: string; state: string; country: string; street: string };
-  phone: string;
+  price: number;
+  brand: string;
+  category: string;
+  note: string;
+  stock: number;
   createdAt: Date;
 }
 
-interface CustomersTableProps {
+interface ProductsTableProps {
   count?: number;
   page?: number;
-  rows?: Customer[];
+  rows?: Product[];
   rowsPerPage?: number;
 }
 
@@ -44,7 +43,7 @@ export function  ProductTable({
   rows = [],
   page = 0,
   rowsPerPage = 0,
-}: CustomersTableProps): React.JSX.Element {
+}: ProductsTableProps): React.JSX.Element {
   const rowIds = React.useMemo(() => {
     return rows.map((customer) => customer.id);
   }, [rows]);
@@ -73,11 +72,13 @@ export function  ProductTable({
                   }}
                 />
               </TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Location</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Signed Up</TableCell>
+              <TableCell>商品名稱</TableCell>
+              <TableCell>價格</TableCell>
+              <TableCell>品牌</TableCell>
+              <TableCell>分類</TableCell>
+              <TableCell>備註</TableCell>
+              <TableCell>庫存</TableCell>
+              <TableCell>修改</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -100,16 +101,18 @@ export function  ProductTable({
                   </TableCell>
                   <TableCell>
                     <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                      <Avatar src={row.avatar} />
+                      {/* <Avatar src={row.avatar} /> */}
                       <Typography variant="subtitle2">{row.name}</Typography>
                     </Stack>
                   </TableCell>
-                  <TableCell>{row.email}</TableCell>
+                  <TableCell>{row.price}</TableCell>
+                  <TableCell>{row.brand}</TableCell>
                   <TableCell>
-                    {row.address.city}, {row.address.state}, {row.address.country}
+                    {row.category}
                   </TableCell>
-                  <TableCell>{row.phone}</TableCell>
-                  <TableCell>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{row.note}</TableCell>
+                  <TableCell>{row.stock}</TableCell>
+                  <TableCell>icon</TableCell>
                 </TableRow>
               );
             })}
