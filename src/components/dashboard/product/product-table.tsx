@@ -15,10 +15,11 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 
 import { useSelection } from '@/hooks/use-selection';
+import { usePagination } from '@/hooks/use-pagination';
 
-function noop(): void {
-  // do nothing
-}
+// function noop(): void {
+//   // do nothing
+// }
 
 export interface Product {
   id: string;
@@ -32,26 +33,32 @@ export interface Product {
 }
 
 interface ProductsTableProps {
-  count?: number;
-  page?: number;
-  rows?: Product[];
-  rowsPerPage?: number;
+  data: Product[];  // 改為接收完整數據
+  defaultRowsPerPage?: number;
 }
 
 export function  ProductTable({
-  count = 0,
-  rows = [],
-  page = 0,
-  rowsPerPage = 0,
+  data = [],
+  defaultRowsPerPage = 5,
 }: ProductsTableProps): React.JSX.Element {
+  // 使用 usePagination hook
+  const {
+    page,
+    rowsPerPage,
+    handlePageChange,
+    handleRowsPerPageChange,
+    paginatedData
+  } = usePagination(data, defaultRowsPerPage);
+
+  // 只對當前頁的數據使用 selection
   const rowIds = React.useMemo(() => {
-    return rows.map((customer) => customer.id);
-  }, [rows]);
+    return paginatedData.map((product) => product.id);
+  }, [paginatedData]);
 
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
 
-  const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
-  const selectedAll = rows.length > 0 && selected?.size === rows.length;
+  const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < paginatedData.length;
+  const selectedAll = paginatedData.length > 0 && selected?.size === paginatedData.length;
 
   return (
     <Card>
@@ -82,7 +89,7 @@ export function  ProductTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => {
+            {paginatedData.map((row) => {
               const isSelected = selected?.has(row.id);
 
               return (
@@ -122,9 +129,9 @@ export function  ProductTable({
       <Divider />
       <TablePagination
         component="div"
-        count={count}
-        onPageChange={noop}
-        onRowsPerPageChange={noop}
+        count={data.length}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
         page={page}
         rowsPerPage={rowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
